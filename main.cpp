@@ -6,7 +6,6 @@ int main()
 {
     Function *f = new Function();
     f->set_function();
-    f->set_derivative();
     double a{}, b{}, epsilon{};
     std::cout << "Entrez a pour [a,b]: ";
     std::cin >> a;
