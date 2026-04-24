@@ -9,25 +9,14 @@ void Function::set_function()
     std::cin >> expression;
 }
 
-void Function::set_derivative()
-{
-    std::cout << "Entrez sa dérivée: ";
-    std::cin >> derivative;
-}
-
 std::string Function::getExpression()
 {
     return expression;
 }
 
-std::string Function::getDerivative()
+double Function::function(double x)
 {
-    return derivative;
-}
-
-double Function::function(std::string funcString, double x)
-{
-    std::string ex = funcString;
+    std::string ex = getExpression();
     std::string num{""};
     std::vector<char> ops;
     std::vector<std::string> nums;
@@ -127,8 +116,8 @@ double Function::function(std::string funcString, double x)
 
 bool Function::isContinue(double a, double b)
 {
-    double resA = std::isnan(function(getExpression(), a));
-    double resB = std::isnan(function(getExpression(), b));
+    double resA = std::isnan(function(a));
+    double resB = std::isnan(function(b));
     return (!resA && !resB && resA != INFINITY && resB != INFINITY);
 }
 
@@ -140,7 +129,7 @@ bool Function::haveASolution(double a, double b, double eps)
     do
     {
         s = (borne1 + borne2) / 2;
-        if (function(getExpression(), borne1) * function(getExpression(), s) < 0)
+        if (function(borne1) * function(s) < 0)
         {
             borne2 = s;
         }
@@ -153,13 +142,18 @@ bool Function::haveASolution(double a, double b, double eps)
         {
             break;
         }
-    } while (fabs(function(getExpression(), s)) >= epsilon);
-    return function(getExpression(), s) < epsilon;
+    } while (fabs(function(s)) >= epsilon);
+    return function(s) < epsilon;
 }
 
-double Function::ftan(double x)
+double Function::derivative(double x, double epsilon)
 {
-    return x - (function(getExpression(), x) / function(getDerivative(), x));
+    return ((function(x + epsilon) - function(x)) / epsilon);
+}
+
+double Function::ftan(double x, double epsilon)
+{
+    return x - (function(x) / derivative(x, epsilon));
 }
 
 double Function::newtonResolution(double a, double b, double epsilon)
@@ -168,11 +162,11 @@ double Function::newtonResolution(double a, double b, double epsilon)
     int essai{0};
     do
     {
-        ao = ftan(ao);
+        ao = ftan(ao, epsilon);
         if (essai >= fabs(a - b) / (2 * epsilon))
         {
             return INFINITY;
         }
-    } while (fabs(function(getExpression(), ao)) >= epsilon);
+    } while (fabs(function(ao)) >= epsilon);
     return ao;
 }
